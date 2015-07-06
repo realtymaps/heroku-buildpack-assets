@@ -1,13 +1,31 @@
 create_default_env() {
-  export NPM_CONFIG_PRODUCTION=${NPM_CONFIG_PRODUCTION:-true}
-  export NPM_CONFIG_LOGLEVEL=${NPM_CONFIG_LOGLEVEL:-error}
-  export NODE_MODULES_CACHE=${NODE_MODULES_CACHE:-true}
+  local build_dir="$1"
+  export ASSETS_CONFIG_PRODUCTION=${ASSETS_CONFIG_PRODUCTION:-true}
+  export ASSETS_MODULES_CACHE=${ASSETS_MODULES_CACHE:-true}
+  export ASSETS_CACHE_DIRECTORY=${ASSETS_CACHE_DIRECTORY:-"_public"}
+  export ASSETS_COMPILE_CMD=${ASSETS_COMPILE_CMD:-"npm run gulp prod"}
+  ASSETS_DEPS=${ASSETS_DEPS:-"$build_dir/.profile.d/nodejs.sh" "$build_dir/scripts/app/syncVars"}
+  export ASSETS_DEPS=( $ASSETS_DEPS )
 }
 
-list_node_config() {
+compile_assets(){
+  header "Compiling Assets"
+  $ASSETS_COMPILE_CMD
+  save_signature
+}
+
+load_dependencies(){
+  local deps=$1
+  for i in "${deps[@]}"
+  do
+	   echo $i
+     source $i
+   done
+}
+
+list_assets_config() {
   echo ""
-  printenv | grep ^NPM_CONFIG_ || true
-  printenv | grep ^NODE_ || true
+  printenv | grep ^ASSETS_ || true
 }
 
 export_env_dir() {
@@ -23,18 +41,4 @@ export_env_dir() {
       done
     fi
   fi
-}
-
-write_profile() {
-  local bp_dir="$1"
-  local build_dir="$2"
-  mkdir -p $build_dir/.profile.d
-  cp $bp_dir/profile/* $build_dir/.profile.d/
-}
-
-write_export() {
-  local bp_dir="$1"
-  local build_dir="$2"
-  echo "export PATH=\"$build_dir/.heroku/node/bin:$build_dir/node_modules/.bin:\$PATH\"" > $bp_dir/export
-  echo "export NODE_HOME=\"$build_dir/.heroku/node\"" >> $bp_dir/export
 }
