@@ -11,7 +11,7 @@ create_default_env() {
 
 compile_assets(){
   header "Syncing DB Variables"
-  source $DB_VAR_SYNC_CMD
+  source $DB_VAR_SYNC_CMD ssl
   header "Compiling Assets"
   $ASSETS_COMPILE_CMD
   save_signature
