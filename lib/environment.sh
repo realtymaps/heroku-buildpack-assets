@@ -4,13 +4,14 @@ create_default_env() {
   export ASSETS_MODULES_CACHE=${ASSETS_MODULES_CACHE:-true}
   export ASSETS_CACHE_DIRECTORY=${ASSETS_CACHE_DIRECTORY:-"_public"}
   export ASSETS_COMPILE_CMD=${ASSETS_COMPILE_CMD:-"npm run gulp prod"}
+  export DB_VAR_SYNC_CMD="$build_dir/scripts/app/syncVars"
   ASSETS_DEPS=${ASSETS_DEPS:-"$build_dir/.profile.d/nodejs.sh"}
   export ASSETS_DEPS=( $ASSETS_DEPS )
 }
 
 compile_assets(){
   header "Syncing DB Variables"
-  $build_dir/scripts/app/syncVars
+  source $DB_VAR_SYNC_CMD
   header "Compiling Assets"
   $ASSETS_COMPILE_CMD
   save_signature
